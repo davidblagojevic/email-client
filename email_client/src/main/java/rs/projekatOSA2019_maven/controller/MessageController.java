@@ -1,5 +1,6 @@
 package rs.projekatOSA2019_maven.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -43,6 +44,7 @@ import rs.projekatOSA2019_maven.service.AccountServiceInterface;
 import rs.projekatOSA2019_maven.service.FolderServiceInterface;
 import rs.projekatOSA2019_maven.service.MessageServiceInterface;
 import rs.projekatOSA2019_maven.service.TagServiceInterface;
+import rs.projekatOSA2019_maven.service.UserServiceInterface;
 
 
 
@@ -61,6 +63,10 @@ public class MessageController {
 	@Autowired
 	TagServiceInterface tagService;
 	
+	@Autowired
+	UserServiceInterface userService;
+	
+	
 	@GetMapping
 	public ResponseEntity<List<MessageDTO>> getAllMessages(){
 		List<Message> messages = messageService.findAll();
@@ -75,11 +81,12 @@ public class MessageController {
 	}
 	
 	@GetMapping(value = "/account/{username}")
-	public ResponseEntity<List<MessageDTO>> getAllMessagesFromUser(@PathVariable("username") String username){
-		MailGetter mailGetter = new MailGetter(messageService, folderService);
+	public ResponseEntity<List<MessageDTO>> getAllMessagesFromUser(@PathVariable("username") String username, Principal principal){
+		User user = userService.findByUsername(principal.getName());
 		
+		MailGetter mailGetter = new MailGetter(messageService, folderService);
 		Account account = accountService.findByUsername(username);
-		if (account == null) {
+		if (account == null || !account.getUser().getUsername().equals(user.getUsername())) {
 			return new ResponseEntity<List<MessageDTO>>(HttpStatus.BAD_REQUEST);
 		}
 		Date maxDate = account.getMessages().stream().map(Message::getDateTime).max(Date::compareTo).get();

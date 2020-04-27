@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="design/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="design/css/index.css">
+    <script src="design/js/jquery-3.4.1.min.js"></script>
+    <script src="design/js/folders.js"></script>
+    <script src="design/js/token-functions.js"></script>
+    <script src="design/js/jwt-decode.min.js"></script>
+    <script src="design/js/table-functions.js"></script>
+    <script src="design/js/account-functions.js"></script>
+    <script src="design/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/9497a339e1.js" crossorigin="anonymous"></script>
+    <title>Folders</title>
+</head>
+
+<body>
+
+
+    <div class="container">
+        <nav class="navbar navbar-expand navbar-dark bg-dark fixed-top">
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Početna</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/countries.html">Države</a>
+                </li>
+            </ul>
+        </nav>
+
+        <h1 class="pageHead">Direktorijumi</h1>
+
+        <!-- Pretraga -->
+        <div class="collapse" id="collapseSearch">
+            <form>
+                <div class="row">
+                    <div class="col-10">
+                        <div class="form-group form-row">
+                            <label for="countryCodeSearchInput" class="col-sm-1 col-form-label">Oznaka</label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" id="countryCodeSearchInput">
+                            </div>
+                        </div>
+                        <div class="form-group form-row">
+                            <label for="countryNameSearchInput" class="col-sm-1 col-form-label">Naziv</label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" id="countryNameSearchInput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 center">
+                        <button id="doSearch" type="button" class="btn btn-outline-secondary">Pretraži</button>
+                        <button id="doReset" type="button" class="btn btn-outline-secondary">Poništi</button>
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button id="refresh" type="button" class="btn btn-outline-secondary"><i
+                    class="fas fa-sync-alt"></i></button>
+
+            <button id="search" type="button" class="btn btn-outline-secondary">Pretraži</button>
+
+            <button id="add" type="button" class="btn btn-outline-secondary">Dodaj</button>
+            <button id="edit" type="button" class="btn btn-outline-secondary">Izmeni</button>
+            <button id="delete" type="button" class="btn btn-outline-secondary">Obriši</button>
+
+            <button id="places" type="button" class="btn btn-outline-secondary">Mesta</button>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button type="button" class="btn btn-outline-secondary btn-sm disabled btn-pagination-previous"><i
+                        class="fas fa-angle-left"></i></button>
+                <span class="pagination-numbering">x do y od z</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-pagination-next"><i
+                        class="fas fa-angle-right"></i></button>
+            </div>
+        </div>
+
+
+
+        <table id="dataTable" class="table">
+            <thead>
+                <tr class="header">
+                    <th>Naziv</th>
+                    <th>Stanje</th>
+                    <th>Operacija</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody">
+            </tbody>
+        </table>
+    </div>
+
+
+    <!--MODALS-->
+    <!--Delete a folder modal-->
+    <div class="modal fade" id="deletePromptModal" tabindex="-1" role="dialog" aria-labelledby="deletePromptLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePromptLabel">Jeste li sigurni?</h5>
+                    <button type="button" class="close deletePromptClose" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="deletePromptText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary deletePromptClose">Otkaži</button>
+                    <button type="button" id="doDeleteFolder" class="btn btn-primary">Obriši</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Add - edit modal-->
+    <div class="modal fade" id="addModalScrollable" tabindex="-1" role="dialog"
+        aria-labelledby="addModalScrollableTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEditModalScrollableTitle">Dodavanje foldera</h5>
+                    <button type="button" class="close addModalClose" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="nameInput">Naziv</label>
+                            <input type="text" class="form-control" id="nameInput" placeholder="Naziv foldera">
+                        </div>
+                        <div class="form-group">
+                            <div>Stanje</div>
+                            <label class="radio-inline"><input type="radio" name="conditionRadio" value="TO" id="radioTo" checked>to</label>
+                            <label class="radio-inline"><input type="radio" name="conditionRadio" value="FROM" id="radioFrom">from</label>
+                            <label class="radio-inline"><input type="radio" name="conditionRadio" value="CC" id="radioCC">cc</label>
+                            <label class="radio-inline"><input type="radio" name="conditionRadio" id="radioSubject"
+                                    value="SUBJECT">subject</label>
+                        </div>
+                        <div class="form-group">
+                            <div>Operacija</div>
+                            <label class="radio-inline"><input type="radio" name="operationRadio" value="MOVE"
+                                    checked id="radioMove">move</label>
+                            <label class="radio-inline"><input type="radio" name="operationRadio" value="COPY" id="radioCopy">copy</label>
+                            <label class="radio-inline"><input type="radio" name="operationRadio" value="DELETE" id="radioDelete">delete</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary addModalClose">Otkaži</button>
+                    <button type="button" id="doAddFolder" class="btn btn-primary">Sačuvaj</button>
+                </div>
+
+            </div>
+        </div>
+
+
+</body>
+
+</html>

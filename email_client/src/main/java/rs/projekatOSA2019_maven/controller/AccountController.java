@@ -1,5 +1,6 @@
 package rs.projekatOSA2019_maven.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,40 +35,13 @@ public class AccountController {
 	@Autowired
     private UserServiceInterface userService;
 
-	@GetMapping(value = "/loginUser/{username}/{password}")
-	public ResponseEntity<Void> loginUser(@PathVariable("username") String username, @PathVariable("password") String password){
-		System.out.println("LOGIN..........");
-		User account = userService.findByUsernameAndPassword(username, password);
-		if (account == null) {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-		}
-		
-		return new ResponseEntity<Void>(HttpStatus.OK);
-	}
 
 
-	@PutMapping(value = "/registrationUser/{username}/{password}/{name}/{lastname}")
-	public ResponseEntity<Void> registrationUser(@PathVariable("username") String username, @PathVariable("password") String password, @PathVariable("name") String name, @PathVariable("lastname") String lastname){
-		System.out.println("LOGIN..........");
-		User user = new User();
-		user.setFirstname(name);
-	
-		user.setLastname(lastname);
-		user.setPassword(password);
-		user.setUsername(username);
-		
-		System.out.println("REGISTRATION.....");
-		userService.save(user);
-		
-		return new ResponseEntity<Void>(HttpStatus.OK);
-
-	}
-	
-	@PutMapping(value = "/addAccaunt/{username}")
-	public ResponseEntity<Void> addAccaunt(@RequestBody AccountDTO accountDTO,@PathVariable("username") String username){
+	@PutMapping(value = "/addAccount")
+	public ResponseEntity<Void> addAccaunt(@RequestBody AccountDTO accountDTO, Principal principal){
 		System.out.println("LOGIN..........");
 		
-		User user = userService.findByUsername(username);
+		User user = userService.findByUsername(principal.getName());
 		
 		Account account=new Account();
 		account.setFolders(null);
@@ -102,16 +76,16 @@ public class AccountController {
 
 	
 	
-	@GetMapping(value = "/getallaccount/{username}")
-	public ResponseEntity<List<AccountDTO>> getAllAccount(@PathVariable("username") String username){
+	@GetMapping
+	public ResponseEntity<List<AccountDTO>> getAllAccounts(Principal princpal){
 		List<Account> accounts = accountService.findAll();
 		
-		System.out.println("username*****"+username);
+		System.out.println("username*****"+ princpal.getName());
 		if (accounts == null) {
 			return new ResponseEntity<List<AccountDTO>>(HttpStatus.NOT_FOUND);
 		}
 		System.out.println("username**5***");
-		User user = userService.findByUsername(username);
+		User user = userService.findByUsername(princpal.getName());
 		System.out.println("username***1**"+user.getId());
 		List<AccountDTO> AccountDTO = new ArrayList<>();
 		for (Account account : accounts) {

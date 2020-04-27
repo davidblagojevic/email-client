@@ -1,5 +1,6 @@
 package rs.projekatOSA2019_maven.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,7 @@ import rs.projekatOSA2019_maven.service.PhotoServiceInterface;
 
 
 @RestController
-@RequestMapping(value="/contacts")
+@RequestMapping(value="contacts")
 public class ContactController {
 	
 	@Autowired
@@ -44,7 +45,8 @@ public class ContactController {
 	PhotoServiceInterface photoService;
 	
 	@GetMapping
-	public ResponseEntity<List<ContactDTO>> getAllContacts(){
+	public ResponseEntity<List<ContactDTO>> getAllContacts(Principal principal){
+		System.out.println(principal.toString());
 		List<Contact> contacts = contactService.findAll();
 		if (contacts == null) {
 			return new ResponseEntity<List<ContactDTO>>(HttpStatus.NOT_FOUND);

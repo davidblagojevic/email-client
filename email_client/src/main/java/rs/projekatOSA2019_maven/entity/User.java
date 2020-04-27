@@ -12,8 +12,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name="users")
@@ -43,7 +49,7 @@ public class User implements Serializable {
 	@Column(name="user_username",unique=true,nullable=false, length=20)
 	private String username;
 	
-	@Column(name="user_password",unique=true,nullable=false,length=20)
+	@Column(name="user_password",unique=false,nullable=false,length=200)
 	private String password;
 	
 	@Column(name="user_firstname",unique=false,nullable=false,length=100)
@@ -51,6 +57,10 @@ public class User implements Serializable {
 	
 	@Column(name="user_lastname",unique=false,nullable=false,length=100)
 	private String lastname;
+	
+	@Column(name = "user_activated", unique=false, nullable=false)
+	@ColumnDefault("1")
+	private boolean activated;
 	
 	@OneToMany(cascade= {ALL}, fetch=LAZY, mappedBy="user" )
 	private Set<Contact> contacts = new HashSet<Contact>();
@@ -60,6 +70,12 @@ public class User implements Serializable {
 	
 	@OneToMany(cascade= {ALL}, fetch=LAZY, mappedBy="user" )
 	private Set<Account> accounts = new HashSet<Account>();
+	@ManyToMany
+	@JoinTable(
+			name = "user_authority",
+			joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
+			inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_NAME", referencedColumnName = "NAME")})
+   private Set<Authority> authorities = new HashSet<>();
 	
 	public void add(Contact contact) {
 		if (contact.getUser() != null) {
@@ -140,6 +156,14 @@ public class User implements Serializable {
 		this.lastname = lastname;
 	}
 
+	public boolean isActivated() {
+		return activated;
+	}
+
+	public void setActivated(boolean activated) {
+		this.activated = activated;
+	}
+
 	public Set<Contact> getContacts() {
 		return contacts;
 	}
@@ -163,7 +187,13 @@ public class User implements Serializable {
 	public void setAccounts(Set<Account> accounts) {
 		this.accounts = accounts;
 	}
+	public Set<Authority> getAuthorities() {
+		   return authorities;
+	}
 
+	public void setAuthorities(Set<Authority> authorities) {
+		this.authorities = authorities;
+	}
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstname=" + firstname

@@ -1,0 +1,59 @@
+
+table {
+	margin-top: 1em;
+}
+
+table tr.highlighted{
+	color: #212529;
+  	background-color: rgba(0, 0, 0, 0.075);
+}
+
+table tr:not(.header){
+	cursor:pointer;
+}
+
+.pageHead {
+	margin-top: 2em;
+	margin-bottom: 0.5em;
+}
+
+.toolbar {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.toolbar > button {
+	margin-right: 3px;
+}
+
+
+td.idCell{
+ 	visibility: hidden; 
+ 	max-width: 0px;
+}
+
+.center{
+	margin:auto;
+}
+
+.pagination{
+	float:right;
+}
+
+.btn-pagination-previous{
+  border-color: #fff;
+  margin-right:5px;
+}
+
+.btn-pagination-next{
+  border-color: #fff;
+  margin-left:5px;
+}
+
+.pagination-numbering {
+	display: inline-flex;
+	align-items: center;
+	color:#6c757d;
+}
